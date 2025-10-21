@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Igor Chiziane - Portfólio Interativo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Reset e estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        /* Cabeçalho */
+        header {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fdbb2d, #b21f1f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        
+        /* Navegação */
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .nav-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-btn.active {
+            background: rgba(253, 187, 45, 0.3);
+            border-color: #fdbb2d;
+        }
+        
+        /* Seções de conteúdo */
+        .content-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #fdbb2d;
+            text-align: center;
+        }
+        
+        /* Estilos específicos para cada seção */
+        .curriculo-content, .galeria-content, .contato-content {
+            line-height: 1.6;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #fdbb2d;
+        }
+        
+        .info-card h3 {
+            margin-bottom: 0.5rem;
+            color: #fdbb2d;
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .skill-tag {
+            background: rgba(253, 187, 45, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(253, 187, 45, 0.3);
+        }
+        
+        /* Estilos para o gráfico Chart.js */
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .chart-wrapper {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+        
+        .chart-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #fdbb2d;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .chart-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .chart-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(253, 187, 45, 0.3);
+            border: 1px solid #fdbb2d;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .chart-btn:hover {
+            background: rgba(253, 187, 45, 0.5);
+        }
+        
+        .chart-btn.active {
+            background: #fdbb2d;
+            color: #1a2a6c;
+            font-weight: 600;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .gallery-caption {
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #fdbb2d;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: #fdbb2d;
+            color: #1a2a6c;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: #f7b01e;
+            transform: translateY(-2px);
+        }
+        
+        /* Estilos específicos para a galeria multimédia */
+        .media-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #fdbb2d;
+        }
+        
+        .media-container h3 {
+            color: #fdbb2d;
+            margin-bottom: 1rem;
+        }
+        
+        .media-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fdbb2d;
+        }
+        
+        audio, video {
+            width: 100%;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        
+        .spotify-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spotify-iframe {
+            border-radius: 12px;
+            margin: 1rem 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: auto;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .media-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .chart-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .chart-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="profile">
+                <div class="avatar">IC</div>
+                <h1>Igor Chiziane</h1>
+                <p class="tagline">Desenvolvedor Web & Designer Criativo | Transformando ideias em experiências digitais memoráveis</p>
+            </div>
+        </header>
+        
+        <nav>
+            <a class="nav-btn active" data-target="curriculo">Ver Currículo</a>
+            <a class="nav-btn" data-target="galeria">Galeria Multimédia</a>
+            <a class="nav-btn" data-target="contato">Formulário Completo</a>
+        </nav>
+
+        <section id="curriculo" class="content-section active">
+            <h2>Currículo</h2>
+            <div class="curriculo-content">
+                <p>Sou um profissional versátil com formação completa e experiência em gestão de vendas, combinada com habilidades técnicas em desenvolvimento web. Busco oportunidades para aplicar minha criatividade e conhecimentos técnicos em projetos inovadores.</p>
+                
+                <!-- Gráfico Chart.js - Currículo Vital -->
+                <div class="chart-container">
+                    <div class="chart-wrapper">
+                        <div class="chart-title">Currículo Vital - Perfil de Habilidades</div>
+                        <canvas id="skillsChart"></canvas>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-type="bar">Gráfico de Barras</button>
+                            <button class="chart-btn" data-type="radar">Gráfico de Radar</button>
+                            <button class="chart-btn" data-type="doughnut">Gráfico de Rosca</button>
+                            <button class="chart-btn" data-type="polarArea">Área Polar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Experiência Profissional</h3>
+                        <p><strong>Gestor de Vendas</strong> - Comércio Local (2022 - Presente)</p>
+                        <p>Coordenação de equipe comercial, estratégias de vendas e relacionamento com clientes.</p>
+                        
+                        <p><strong>Assistente Comercial</strong> - Empresa Familiar (2020 - 2022)</p>
+                        <p>Suporte nas atividades comerciais, atendimento ao cliente e gestão de estoque.</p>
+                        
+                        <p><strong>Freelancer em Desenvolvimento Web</strong> (2023 - Presente)</p>
+                        <p>Criação de sites responsivos e soluções web personalizadas para pequenos negócios.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Formação Acadêmica</h3>
+                        <p><strong>Ensino Secundário Completo</strong> - Escola Secundária (Concluído em 2021)</p>
+                        <p>Formação geral com foco em ciências sociais e humanas.</p>
+                        
+                        <p><strong>Ensino Primário Completo</strong> - Escola Primária (2016 - 2020)</p>
+                        <p>Base educacional fundamental.</p>
+                        
+                        <p><strong>Cursos Online em Programação</strong> - Plataformas Digitais (2022 - Presente)</p>
+                        <p>Especialização em desenvolvimento web front-end através de cursos online.</p>
+                    </div>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Habilidades Técnicas</h3>
+                        <div class="skills-list">
+                            <span class="skill-tag">HTML5</span>
+                            <span class="skill-tag">CSS3</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">Git</span>
+                            <span class="skill-tag">Responsive Design</span>
+                            <span class="skill-tag">Bootstrap</span>
+                            <span class="skill-tag">Figma</span>
+                            <span class="skill-tag">Adobe Photoshop</span>
+                            <span class="skill-tag">UI/UX Design</span>
+                            <span class="skill-tag">Microsoft Office</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Habilidades Pessoais</h3>
+                        <div class="skills-list">
+                            <span class="skill-tag">Gestão de Vendas</span>
+                            <span class="skill-tag">Atendimento ao Cliente</span>
+                            <span class="skill-tag">Trabalho em Equipe</span>
+                            <span class="skill-tag">Comunicação</span>
+                            <span class="skill-tag">Resolução de Problemas</span>
+                            <span class="skill-tag">Criatividade</span>
+                            <span class="skill-tag">Organização</span>
+                            <span class="skill-tag">Adaptabilidade</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3>Projetos Desenvolvidos</h3>
+                    <p><strong>Site Institucional para Loja Local</strong> - Desenvolvimento completo do front-end usando HTML, CSS e JavaScript.</p>
+                    <p><strong>Portfólio Pessoal Interativo</strong> - Criação deste portfólio com design responsivo e funcionalidades JavaScript.</p>
+                    <p><strong>Landing Page para Evento</strong> - Página de captura com formulário de inscrição e design moderno.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>Objetivos Profissionais</h3>
+                    <p>Busco oportunidades para crescer profissionalmente na área de tecnologia, combinando minhas habilidades em gestão de vendas com o desenvolvimento web. Tenho interesse em posições que me permitam aprender novas tecnologias enquanto contribuo com minhas competências existentes.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="galeria" class="content-section">
+            <h2>Galeria Multimédia</h2>
+            <div class="galeria-content">
+                <div class="media-container">
+                    <div class="media-profile">
+                        <img src="c:\Users\Nelson\Desktop\trabalhode afzal multimidia\igor picture.jpeg" alt="Igor Chiziane" class="profile-img">
+                        <div>
+                            <h3>Igor Chiziane</h3>
+                            <p>Desenvolvedor Web e entusiasta de tecnologia. Esta é minha galeria multimédia, criada para demonstrar o uso de elementos de áudio, vídeo e imagem em HTML5.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="media-container">
+                    <h3>Reprodutor de Áudio</h3>
+                    <p>Ouça esta amostra de áudio usando o player HTML5. Os controles permitem reproduzir, pausar e ajustar o volume.</p>
+                    <audio controls>
+                        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                        Seu navegador não suporta o elemento de áudio.
+                    </audio>
+                    <p>Este é um exemplo de como incorporar áudio em uma página web usando a tag &lt;audio&gt; com o atributo "controls".</p>
+                </div>
+                
+                <div class="media-container">
+                    <h3>Reprodutor de Vídeo</h3>
+                    <p>Assista a este vídeo demonstrativo usando o player HTML5. Você pode controlar a reprodução, volume e assistir em tela cheia.</p>
+                    <video controls poster="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80">
+                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                        Seu navegador não suporta o elemento de vídeo.
+                    </video>
+                    <p>Este é um exemplo de como incorporar vídeo em uma página web usando a tag &lt;video&gt; com o atributo "controls".</p>
+                </div>
+                
+                <div class="spotify-container">
+                    <h3>Playlist do Spotify</h3>
+                    <p>Ouça esta playlist musical incorporada diretamente do Spotify</p>
+                    
+                    <iframe 
+                        class="spotify-iframe"
+                        src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0" 
+                        width="100%" 
+                        height="352" 
+                        frameBorder="0" 
+                        allowfullscreen="" 
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                        loading="lazy">
+                    </iframe>
+                </div>
+                
+                <div class="media-container">
+                    <h3>Galeria de Imagens</h3>
+                    <p>Uma coleção de imagens com legendas descritivas, demonstrando a tag &lt;figure&gt; e &lt;figcaption&gt;.</p>
+                    
+                    <div class="gallery-grid">
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80" alt="Paisagem de Montanhas" class="gallery-img">
+                            <div class="gallery-caption">
+                                <p>Montanhas majestosas com neve no topo, mostrando a beleza da natureza intocada.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80" alt="Oceano Azul" class="gallery-img">
+                            <div class="gallery-caption">
+                                <p>O vasto oceano azul com ondas quebrando na praia, transmitindo paz e tranquilidade.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80" alt="Floresta Verde" class="gallery-img">
+                            <div class="gallery-caption">
+                                <p>Floresta densa com luz do sol filtrando pelas árvores, criando um ambiente mágico.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80" alt="Pico Montanhoso" class="gallery-img">
+                            <div class="gallery-caption">
+                                <p>Alto pico montanhoso atingindo as nuvens, demonstrando a grandiosidade da natureza.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contato" class="content-section">
+            <h2>Entre em Contato</h2>
+            <div class="contato-content">
+                <p>Estou sempre aberto a novas oportunidades e colaborações. Use o formulário abaixo para entrar em contato comigo.</p>
+                
+                <form style="margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" class="form-control" placeholder="Seu nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" class="form-control" placeholder="seu@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assunto">Assunto</label>
+                        <input type="text" id="assunto" class="form-control" placeholder="Assunto da mensagem">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mensagem">Mensagem</label>
+                        <textarea id="mensagem" class="form-control" placeholder="Descreva sua proposta ou dúvida..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Enviar Mensagem</button>
+                </form>
+                
+                <div class="info-grid" style="margin-top: 2rem;">
+                    <div class="info-card">
+                        <h3>Informações de Contato</h3>
+                        <p><strong>E-mail:</strong> igor.chiziane@gmail.com</p>
+                        <p><strong>Telefone:</strong> +258 863989889</p>
+                        <p><strong>Localização:</strong> Maputo, Moçambique</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Redes Sociais</h3>
+                        <p><strong>LinkedIn:</strong> /igor-chiziane</p>
+                        <p><strong>GitHub:</strong> /igor-chiziane</p>
+                        <p><strong>Behance:</strong> /igor-chiziane</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>© 2025 Igor Chiziane — Todos os direitos reservados</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            // Função para mostrar a seção selecionada
+            function showSection(targetId) {
+                // Esconder todas as seções
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Remover classe active de todos os botões
+                navButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+                
+                // Mostrar a seção selecionada
+                document.getElementById(targetId).classList.add('active');
+                
+                // Ativar o botão clicado
+                event.target.classList.add('active');
+            }
+            
+            // Adicionar evento de clique a todos os botões de navegação
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    showSection(targetId);
+                });
+            });
+            
+            // Dados para o gráfico
+            const skillsData = {
+                labels: [
+                    'HTML5/CSS3', 
+                    'JavaScript', 
+                    'UI/UX Design', 
+                    'Git', 
+                    'Gestão de Vendas', 
+                    'Comunicação', 
+                    'Resolução de Problemas', 
+                    'Trabalho em Equipe'
+                ],
+                datasets: [{
+                    label: 'Nível de Habilidade (%)',
+                    data: [85, 75, 70, 65, 90, 85, 80, 88],
+                    backgroundColor: [
+                        'rgba(26, 42, 108, 0.7)',
+                        'rgba(42, 58, 156, 0.7)',
+                        'rgba(58, 74, 204, 0.7)',
+                        'rgba(74, 90, 232, 0.7)',
+                        'rgba(178, 31, 31, 0.7)',
+                        'rgba(194, 47, 47, 0.7)',
+                        'rgba(210, 63, 63, 0.7)',
+                        'rgba(226, 79, 79, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(26, 42, 108)',
+                        'rgb(42, 58, 156)',
+                        'rgb(58, 74, 204)',
+                        'rgb(74, 90, 232)',
+                        'rgb(178, 31, 31)',
+                        'rgb(194, 47, 47)',
+                        'rgb(210, 63, 63)',
+                        'rgb(226, 79, 79)'
+                    ],
+                    borderWidth: 2
+                }]
+            };
+            
+            // Configuração do gráfico
+            const chartConfig = {
+                type: 'bar',
+                data: skillsData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'white',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fdbb2d',
+                            bodyColor: 'white'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: 'white',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Criar gráfico inicial
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            let skillsChart = new Chart(ctx, chartConfig);
+            
+            // Controles para mudar o tipo de gráfico
+            const chartButtons = document.querySelectorAll('.chart-btn');
+            
+            chartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover classe active de todos os botões
+                    chartButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Adicionar classe active ao botão clicado
+                    this.classList.add('active');
+                    
+                    // Obter o tipo de gráfico
+                    const chartType = this.getAttribute('data-type');
+                    
+                    // Destruir gráfico atual
+                    skillsChart.destroy();
+                    
+                    // Atualizar configuração com novo tipo
+                    chartConfig.type = chartType;
+                    
+                    // Criar novo gráfico
+                    skillsChart = new Chart(ctx, chartConfig);
+                });
+            });
+            
+            // Re-inicializar gráfico quando a seção de currículo for ativada
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.getAttribute('data-target') === 'curriculo') {
+                        // Pequeno delay para garantir que a seção está visível
+                        setTimeout(() => {
+                            skillsChart.update();
+                        }, 300);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
